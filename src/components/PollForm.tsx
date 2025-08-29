@@ -1,17 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function PollForm() {
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  const { user } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +43,7 @@ export function PollForm() {
         body: JSON.stringify({
           question,
           options: optionsArray,
-          created_by: 'placeholder-user-id', // TODO: Get from auth context
+          created_by: user?.id,
         }),
       });
 
@@ -48,12 +53,11 @@ export function PollForm() {
         throw new Error(data.error || 'Failed to create poll');
       }
 
-      // TODO: Handle successful creation (redirect, show success message, etc.)
+      // Handle successful creation
       console.log('Poll created:', data);
       
-      // Reset form
-      setQuestion('');
-      setOptions('');
+      // Redirect to polls page
+      router.push('/polls');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

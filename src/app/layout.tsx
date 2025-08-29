@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { Navigation } from "@/components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,32 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <nav className="border-b bg-background">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex justify-between items-center">
-              <Link href="/" className="text-xl font-bold">
-                ALX Polly
-              </Link>
-              <div className="flex space-x-4">
-                <Link href="/polls" className="hover:underline">
-                  My Polls
-                </Link>
-                <Link href="/polls/new" className="hover:underline">
-                  Create Poll
-                </Link>
-                <Link href="/auth/login" className="hover:underline">
-                  Login
-                </Link>
-                <Link href="/auth/register" className="hover:underline">
-                  Register
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <main className="min-h-screen bg-background">
-          {children}
-        </main>
+        <AuthProvider>
+          <Navigation />
+          <main className="min-h-screen bg-background">
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );
