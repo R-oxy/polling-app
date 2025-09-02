@@ -16,10 +16,12 @@ export function Navigation() {
   };
 
   // Extract first name from email
-  const getFirstName = (email: string) => {
+  const getFirstName = (email: string | undefined) => {
+    if (!email) return 'User';
     const beforeAt = email.split('@')[0];
     // Remove numbers and special characters, capitalize first letter
     const cleanName = beforeAt.replace(/[0-9._-]/g, '');
+    if (cleanName.length === 0) return 'User';
     return cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase();
   };
 
