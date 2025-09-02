@@ -15,56 +15,115 @@ export function Navigation() {
     }
   };
 
+  // Extract first name from email
+  const getFirstName = (email: string) => {
+    const beforeAt = email.split('@')[0];
+    // Remove numbers and special characters, capitalize first letter
+    const cleanName = beforeAt.replace(/[0-9._-]/g, '');
+    return cleanName.charAt(0).toUpperCase() + cleanName.slice(1).toLowerCase();
+  };
+
   return (
     <nav className="border-b bg-background">
       <div className="container mx-auto px-4 py-3">
-        <div className="flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold">
+        <div className="flex items-center justify-between">
+          {/* Left: Brand Logo */}
+          <Link href="/" className="text-xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
             ALX Polly
           </Link>
           
-          <div className="flex items-center space-x-4">
+          {/* Center: Main Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
             {user ? (
-              // Authenticated user navigation
               <>
-                <Link href="/polls" className="hover:underline">
+                <Link 
+                  href="/polls" 
+                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                >
                   My Polls
                 </Link>
-                <Link href="/polls/new" className="hover:underline">
+                <Link 
+                  href="/polls/new" 
+                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                >
                   Create Poll
                 </Link>
-                <div className="flex items-center space-x-3">
-                  <span className="text-sm text-gray-600">
-                    Welcome, {user.email}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSignOut}
-                    disabled={loading}
-                  >
-                    {loading ? 'Signing out...' : 'Sign Out'}
-                  </Button>
-                </div>
               </>
             ) : (
-              // Unauthenticated user navigation
               <>
-                <Link href="/polls" className="hover:underline">
+                <Link 
+                  href="/polls" 
+                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                >
                   Browse Polls
-                </Link>
-                <Link href="/auth/login" className="hover:underline">
-                  Login
-                </Link>
-                <Link href="/auth/register">
-                  <Button variant="default" size="sm">
-                    Sign Up
-                  </Button>
                 </Link>
               </>
             )}
           </div>
+
+          {/* Right: User Actions */}
+          <div className="flex items-center space-x-4">
+            {user ? (
+              // Authenticated user
+              <div className="flex items-center space-x-4">
+                <div className="hidden sm:flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-blue-600">
+                      {getFirstName(user.email).charAt(0)}
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-700 font-medium">
+                    Welcome, {getFirstName(user.email)}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSignOut}
+                  disabled={loading}
+                  className="border-gray-300 hover:border-red-400 hover:text-red-600"
+                >
+                  {loading ? 'Signing out...' : 'Sign Out'}
+                </Button>
+              </div>
+            ) : (
+              // Unauthenticated user
+              <div className="flex items-center space-x-3">
+                <Link 
+                  href="/auth/login" 
+                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                >
+                  Login
+                </Link>
+                <Link href="/auth/register">
+                  <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Mobile Navigation Menu (for smaller screens) */}
+        {user && (
+          <div className="md:hidden mt-3 pt-3 border-t border-gray-200">
+            <div className="flex justify-center space-x-6">
+              <Link 
+                href="/polls" 
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors text-sm"
+              >
+                My Polls
+              </Link>
+              <Link 
+                href="/polls/new" 
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors text-sm"
+              >
+                Create Poll
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
