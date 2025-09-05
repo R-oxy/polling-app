@@ -4,9 +4,48 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
+/**
+ * Navigation Component - Main App Navigation Bar
+ *
+ * Responsive navigation bar that adapts based on user authentication status.
+ * Features a three-column layout with branding, navigation links, and user actions.
+ *
+ * Layout Structure:
+ * - Left: ALX Polly branding/logo
+ * - Center: Navigation links (My Polls, Create Poll) - hidden on mobile
+ * - Right: User authentication UI (avatar, name, sign out)
+ *
+ * Features:
+ * - Responsive design with mobile menu
+ * - User avatar with first name initial
+ * - Personalized welcome message
+ * - Conditional rendering based on auth state
+ * - Loading states for authentication actions
+ *
+ * @component Navigation
+ * @returns {JSX.Element} Navigation bar with branding and user controls
+ *
+ * @example
+ * ```tsx
+ * import { Navigation } from '@/components/Navigation';
+ *
+ * function Layout({ children }) {
+ *   return (
+ *     <div>
+ *       <Navigation />
+ *       <main>{children}</main>
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
 export function Navigation() {
   const { user, signOut, loading } = useAuth();
 
+  /**
+   * Handle user sign out with error handling
+   * Calls the auth context signOut method and logs any errors
+   */
   const handleSignOut = async () => {
     try {
       await signOut();

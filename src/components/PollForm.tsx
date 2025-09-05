@@ -10,6 +10,46 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 
+/**
+ * PollForm Component - Create and Edit Polls
+ *
+ * A comprehensive form component for creating new polls with the following features:
+ * - Dynamic option management (add/remove options)
+ * - Real-time form validation
+ * - Success/error state handling
+ * - Automatic redirect after successful creation
+ * - Responsive design with loading states
+ *
+ * Form Fields:
+ * - Title (required, 3-200 chars)
+ * - Description (optional, 0-1000 chars)
+ * - Question (required, 5-500 chars)
+ * - Options (2-10 options, dynamic management)
+ * - Multiple votes toggle
+ * - Expiration date (optional)
+ *
+ * Security:
+ * - Requires authenticated user session
+ * - Validates session before submission
+ * - Sanitizes all input data
+ *
+ * @component PollForm
+ * @returns {JSX.Element} Poll creation form with validation and submission handling
+ *
+ * @example
+ * ```tsx
+ * import { PollForm } from '@/components/PollForm';
+ *
+ * function CreatePollPage() {
+ *   return (
+ *     <div className="container mx-auto p-4">
+ *       <h1>Create New Poll</h1>
+ *       <PollForm />
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
 export function PollForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -24,24 +64,54 @@ export function PollForm() {
   const { user } = useAuth();
   const router = useRouter();
 
+  /**
+   * Add a new empty option to the poll
+   * Maximum of 10 options allowed to prevent UI clutter
+   */
   const addOption = () => {
     if (options.length < 10) {
       setOptions([...options, '']);
     }
   };
 
+  /**
+   * Remove an option at the specified index
+   * Minimum of 2 options required for a valid poll
+   * @param {number} index - Index of the option to remove
+   */
   const removeOption = (index: number) => {
     if (options.length > 2) {
       setOptions(options.filter((_, i) => i !== index));
     }
   };
 
+  /**
+   * Update the value of an option at the specified index
+   * @param {number} index - Index of the option to update
+   * @param {string} value - New value for the option
+   */
   const updateOption = (index: number, value: string) => {
     const newOptions = [...options];
     newOptions[index] = value;
     setOptions(newOptions);
   };
 
+  /**
+   * Handle form submission with comprehensive validation and error handling
+   *
+   * This function performs the following steps:
+   * 1. Client-side form validation
+   * 2. Data sanitization and cleaning
+   * 3. Authentication token retrieval
+   * 4. API call to create poll
+   * 5. Success state management and redirect
+   *
+   * @async
+   * @param {React.FormEvent} e - Form submission event
+   * @returns {Promise<void>} Resolves when submission is complete
+   *
+   * @throws {Error} When validation fails or API call encounters an error
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -49,7 +119,7 @@ export function PollForm() {
     setSuccess(false);
 
     try {
-      // Validate form
+      // Step 1: Client-side validation
       if (!title.trim()) {
         throw new Error('Please provide a poll title');
       }
@@ -58,7 +128,8 @@ export function PollForm() {
         throw new Error('Please provide a poll question');
       }
 
-      // Clean and validate options
+      // Step 2: Clean and validate options
+      // Remove whitespace and filter out empty options
       const cleanOptions = options
         .map(option => option.trim())
         .filter(option => option.length > 0);
@@ -67,13 +138,13 @@ export function PollForm() {
         throw new Error('Please provide at least 2 non-empty options');
       }
 
-      // Check for duplicate options
+      // Step 3: Check for duplicate options to ensure poll integrity
       const uniqueOptions = [...new Set(cleanOptions)];
       if (uniqueOptions.length !== cleanOptions.length) {
         throw new Error('Please ensure all options are unique');
       }
 
-      // Prepare poll data
+      // Step 4: Prepare sanitized poll data for API submission
       const pollData = {
         title: title.trim(),
         description: description.trim() || undefined,
@@ -83,14 +154,14 @@ export function PollForm() {
         expires_at: expiresAt || undefined,
       };
 
-      // Get the current session to get the access token
+      // Step 5: Retrieve current user session for authentication
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session?.access_token) {
         throw new Error('No valid session found. Please log in again.');
       }
 
-      // Submit to API
+      // Step 6: Submit poll data to API endpoint
       const response = await fetch('/api/polls', {
         method: 'POST',
         headers: {
@@ -106,20 +177,22 @@ export function PollForm() {
         throw new Error(data.error || 'Failed to create poll');
       }
 
-      // Handle successful creation
+      // Step 7: Handle successful poll creation
       console.log('Poll created successfully:', data.poll);
-      
-      // Show success message
+
+      // Show success message and update UI state
       setSuccess(true);
       setLoading(false);
-      
-      // Redirect after showing success message for 2 seconds
+
+      // Redirect to polls list after brief success display (2 seconds)
       setTimeout(() => {
         router.push('/polls');
       }, 2000);
     } catch (err) {
+      // Handle and display any errors that occurred during submission
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
+      // Ensure loading state is cleared in all cases
       setLoading(false);
     }
   };
