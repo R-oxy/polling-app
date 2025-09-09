@@ -1,13 +1,18 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PollResult } from '@/types';
+import { ShareModal } from '@/components/ShareModal';
+import { Share2 } from 'lucide-react';
 
 interface PollListProps {
   polls: PollResult[];
 }
 
 export function PollList({ polls }: PollListProps) {
+  const [shareModalPoll, setShareModalPoll] = useState<PollResult | null>(null);
+
   if (polls.length === 0) {
     return (
       <Card>
@@ -100,15 +105,10 @@ export function PollList({ polls }: PollListProps) {
                   Edit
                 </Button>
               </Link>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  const url = `${window.location.origin}/polls/${poll.id}`;
-                  navigator.clipboard.writeText(url);
-                  // TODO: Show toast notification
-                  console.log('Poll URL copied to clipboard:', url);
-                }}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShareModalPoll(poll)}
               >
                 Share
               </Button>
@@ -133,6 +133,15 @@ export function PollList({ polls }: PollListProps) {
           </CardContent>
         </Card>
       ))}
+
+      {/* Share Modal */}
+      {shareModalPoll && (
+        <ShareModal
+          poll={shareModalPoll}
+          isOpen={!!shareModalPoll}
+          onClose={() => setShareModalPoll(null)}
+        />
+      )}
     </div>
   );
 }

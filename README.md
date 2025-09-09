@@ -1,3 +1,4 @@
+
 # ALX Polly - Interactive Polling Application
 
 ![Next.js](https://img.shields.io/badge/Next.js-15.0-black)
@@ -18,6 +19,8 @@ A modern, full-stack polling application built with Next.js 13+ App Router, feat
 - **🎯 Duplicate Prevention** - Smart vote validation based on user ID or IP
 - **⏰ Poll Expiration** - Set expiration dates for time-limited polls
 - **📱 Responsive Design** - Mobile-first design with Tailwind CSS
+- **🔗 Advanced Sharing** - QR codes, social media integration, and share analytics
+- **📊 Share Tracking** - Comprehensive analytics for sharing behavior
 
 ### Technical Features
 - **Next.js 13+ App Router** - Modern React architecture
@@ -235,7 +238,17 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 - **My Polls**: View all polls you've created
 - **Edit Polls**: Modify poll details (title, description, options)
 - **View Analytics**: See voting patterns and engagement
-- **Share Polls**: Copy poll links to share with others
+- **Share Polls**: Advanced sharing with QR codes and social media integration
+
+### Sharing Your Polls
+
+The enhanced sharing system provides multiple ways to distribute your polls:
+
+1. **Share Modal**: Click the "Share" button on any poll to open the sharing interface
+2. **Copy Link**: One-click copying of poll URLs to clipboard
+3. **QR Codes**: Generate and download QR codes for easy mobile access
+4. **Social Media**: Direct sharing to Twitter, Facebook, LinkedIn, and WhatsApp
+5. **Share Analytics**: Track how your polls are being shared and accessed
 
 ## 🧪 Testing
 
@@ -287,6 +300,10 @@ Current test files:
 
 - `POST /api/polls/[id]/vote` - Submit a vote
 - `GET /api/polls/[id]/vote` - Check if user has voted
+
+### Sharing Endpoints
+
+- `POST /api/polls/[id]/share` - Record share analytics
 
 ## 🚀 Deployment
 
